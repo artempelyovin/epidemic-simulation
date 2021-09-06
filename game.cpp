@@ -38,7 +38,7 @@ void draw_circle(SDL_Renderer *renderer, const int x0, const int y0, const int r
 }
 
 
-bool check_collision(const People *people1, const People *people2) {
+bool _check_collision(const People *people1, const People *people2) {
     int centre_x1 = people1->getX() + PEOPLE_SIZE / 2;
     int centre_y1 = people1->getY() + PEOPLE_SIZE / 2;
 
@@ -59,7 +59,7 @@ bool check_collision(const People *people1, const People *people2) {
 }
 
 
-void Game::draw_people(const People *people) {
+void Game::_draw_people(const People *people) {
     SDL_Rect people_rect;
     if (people->getPeopleType() == INFECTIOUS) {
         people_rect = {people->getX(), people->getY(), PEOPLE_SIZE, PEOPLE_SIZE};
@@ -130,17 +130,17 @@ Game::~Game() {
 
 bool Game::isRun() const        { return run;}
 
-bool Game::isEndOfEpidemic() const {
+bool Game::_isEndOfEpidemic() const {
     return peoples_infected.empty();
 };
 
 void Game::oneStepSimulation() {
-    if (isEndOfEpidemic())  run = false;
+    if (_isEndOfEpidemic())  run = false;
 
     const size_t num_of_infected = peoples_infected.size();
     for (size_t i = 0; i <  num_of_infected; i++) {
         for (size_t j = 0; j < peoples_susceptible.size(); j++) {
-            if (check_collision(peoples_infected[i], peoples_susceptible[j])) {
+            if (_check_collision(peoples_infected[i], peoples_susceptible[j])) {
                 peoples_susceptible[j]->changePeopleType(INFECTIOUS);
                 peoples_infected.push_back(peoples_susceptible[j]);
                 peoples_susceptible.erase(peoples_susceptible.begin() + j);
@@ -175,15 +175,15 @@ void Game::render() {
     SDL_RenderClear(renderer);
 
     for (People* susceptible_people: peoples_susceptible) {
-        draw_people(susceptible_people);
+        _draw_people(susceptible_people);
     }
 
     for (People* recovered_people: peoples_recovered) {
-        draw_people(recovered_people);
+        _draw_people(recovered_people);
     }
 
     for (People* infected_people: peoples_infected) {
-        draw_people(infected_people);
+        _draw_people(infected_people);
     }
 
     SDL_RenderPresent(renderer);

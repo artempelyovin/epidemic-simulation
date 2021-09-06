@@ -27,12 +27,13 @@ private:
 public:
     Game();
     ~Game();
-    bool isEndOfEpidemic() const;
     bool isRun() const;
     void oneStepSimulation();
     void inputProcessing();
-    void draw_people(const People *people);
     void render();
+private:
+    bool _isEndOfEpidemic() const;
+    void _draw_people(const People *people);
 };
 
 #endif // GAME_HPP
