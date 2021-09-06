@@ -50,7 +50,7 @@ bool check_collision(const People *people1, const People *people2) {
 
     int radius = dx*dx + dy*dy;
 
-    if (radius < INFECTION_RADIUS * INFECTION_RADIUS) {
+    if (radius <= INFECTION_RADIUS * INFECTION_RADIUS) {
         if (rand() % 101 <= PROBABILITY_OF_INFECTION) {
             return true;
         }
@@ -117,7 +117,7 @@ Game::Game()
         peoples_susceptible.push_back(new People());
     }
 
-    peoples_susceptible.push_back(new People(INFECTIOUS));
+    peoples_infected.push_back(new People(INFECTIOUS));
 
 }
 
