@@ -42,6 +42,13 @@ int People::getY() const                        { return coords.getY();}
 PeopleType People::getPeopleType() const        { return type;}
 void People::changePeopleType(PeopleType type)  {this->type = type;}
 
+bool People::checkRecovering() const {
+    if (type != INFECTIOUS)     return false;
+
+    if (infected_steps / STEPS_IN_DAY > PERIOD_OF_ILLNES)     return true;
+    else                                                      return false;
+}
+
 void People::move() {
     int x = coords.getX();
     int y = coords.getY();

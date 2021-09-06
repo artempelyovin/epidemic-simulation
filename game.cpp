@@ -135,14 +135,14 @@ bool Game::isEndOfEpidemic() const {
 };
 
 void Game::oneStepSimulation() {
-    if (isEndOfEpidemic())  run = true;
+    if (isEndOfEpidemic())  run = false;
 
     const size_t num_of_infected = peoples_infected.size();
     for (size_t i = 0; i <  num_of_infected; i++) {
         for (size_t j = 0; j < peoples_susceptible.size(); j++) {
             if (check_collision(peoples_infected[i], peoples_susceptible[j])) {
+                peoples_susceptible[j]->changePeopleType(INFECTIOUS);
                 peoples_infected.push_back(peoples_susceptible[j]);
-                peoples_infected[i+1]->changePeopleType(INFECTIOUS);
                 peoples_susceptible.erase(peoples_susceptible.begin() + j);
             }
         }
@@ -156,36 +156,17 @@ void Game::oneStepSimulation() {
         recovered_people->move();
     }
 
-    for (People* infected_people: peoples_infected) {
-        infected_people->move();
+    for (size_t i = 0; i < peoples_infected.size(); i++) {
+        peoples_infected[i]->move();
+        peoples_infected[i]->infected_steps++;
+
+        if (peoples_infected[i]->checkRecovering()) {
+            peoples_infected[i]->changePeopleType(RECOVERED);
+            peoples_recovered.push_back(peoples_infected[i]);
+            peoples_infected.erase(peoples_infected.begin() + i);
+        }
     }
 
-
-//    for (int i = 0; i < NUMBER_OF_PEOPLE; i++) {
-//        if (peoples[i].getPeopleType() == INFECTIOUS) {
-//            int centre_x1 = peoples[i].getX() + PEOPLE_SIZE / 2;
-//            int centre_y1 = peoples[i].getY() + PEOPLE_SIZE / 2;
-
-//            for (int j = 0; j < NUMBER_OF_PEOPLE; j++) {
-//                if (peoples[j].getPeopleType() != INFECTIOUS) {
-//                    int centre_x2 = peoples[j].getX() + PEOPLE_SIZE / 2;
-//                    int centre_y2 = peoples[j].getY() + PEOPLE_SIZE / 2;
-
-//                    int dx = centre_x1 - centre_x2;
-//                    int dy = centre_y1 - centre_y2;
-
-//                    int radius = dx*dx + dy*dy;
-
-//                    if (radius < INFECTION_RADIUS * INFECTION_RADIUS) {
-//                        if (rand() % 101 <= PROBABILITY_OF_INFECTION) {
-//                            peoples[j].changePeopleType(INFECTIOUS);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        peoples[i].move();
-//    }
     game_steps++;
 }
 

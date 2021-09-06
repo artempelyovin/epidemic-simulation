@@ -26,7 +26,7 @@ private:
     Vector2D coords;
     Vector2D direction;
     PeopleType type;
-
+public:
     int infected_steps = 0;
 public:
     People();
@@ -37,6 +37,7 @@ public:
     PeopleType getPeopleType() const;
     void changePeopleType(PeopleType type);
     void move();
+    bool checkRecovering() const;
 };
 
 
