@@ -122,6 +122,10 @@ Game::Game()
 }
 
 Game::~Game() {
+    peoples_susceptible.clear();
+    peoples_infected.clear();
+    peoples_recovered.clear();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
