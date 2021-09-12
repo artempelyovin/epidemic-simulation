@@ -1,10 +1,21 @@
 #include <iostream>
+#include <fstream>
 #include <time.h>
 
 #include <SDL2/SDL_image.h>
 
 #include "game.hpp"
 #include "settings.hpp"
+
+
+int average(int *mass, int n) {
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += mass[i];
+    }
+
+    return sum / n;
+}
 
 
 void draw_circle(SDL_Renderer *renderer, const int x0, const int y0, const int radius, int segments, const SDL_Color color) {
@@ -77,6 +88,7 @@ void Game::_draw_people(const People *people) {
     SDL_RenderCopy(renderer, textures[people->getPeopleType()], nullptr, &people_rect);
 }
 
+
 Game::Game()
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -107,9 +119,9 @@ Game::Game()
     }
 
     // Load textures
-    textures[0] = IMG_LoadTexture(renderer, "/home/artem/C++/epidemic-simulation/img/susceptible.png");
-    textures[1] = IMG_LoadTexture(renderer, "/home/artem/C++/epidemic-simulation/img/infectious.png");
-    textures[2] = IMG_LoadTexture(renderer, "/home/artem/C++/epidemic-simulation/img/recovered.png");
+    textures[0] = IMG_LoadTexture(renderer, "img/susceptible.png");
+    textures[1] = IMG_LoadTexture(renderer, "img/infectious.png");
+    textures[2] = IMG_LoadTexture(renderer, "img/recovered.png");
 
 
     // Create many susceptible people and one infected people
@@ -118,18 +130,25 @@ Game::Game()
     }
 
     peoples_infected.push_back(new People(INFECTIOUS));
-
 }
 
+
 Game::~Game() {
-    peoples_susceptible.clear();
-    peoples_infected.clear();
-    peoples_recovered.clear();
+    for (size_t i = 0; i < peoples_susceptible.size(); i++) {
+        delete peoples_susceptible[i];
+    }
+
+    for (size_t i = 0; i < peoples_infected.size(); i++) {
+        delete peoples_infected[i];
+    }
+
+    for (size_t i = 0; i < peoples_recovered.size(); i++) {
+        delete peoples_recovered[i];
+    }
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-    std::cout << "The epidemic ended in " << game_steps / STEPS_IN_DAY << " days..." << std::endl;
 }
 
 bool Game::isRun() const        { return run;}
@@ -139,8 +158,9 @@ bool Game::_isEndOfEpidemic() const {
 };
 
 void Game::oneStepSimulation() {
-    if (_isEndOfEpidemic())  run = false;
+    if (_isEndOfEpidemic())     run = false;
 
+    // interaction of infected and susceptible
     const size_t num_of_infected = peoples_infected.size();
     for (size_t i = 0; i <  num_of_infected; i++) {
         for (size_t j = 0; j < peoples_susceptible.size(); j++) {
@@ -152,6 +172,7 @@ void Game::oneStepSimulation() {
         }
     }
 
+    // Move
     for (People* susceptible_people: peoples_susceptible) {
         susceptible_people->move();
     }
@@ -162,8 +183,8 @@ void Game::oneStepSimulation() {
 
     for (size_t i = 0; i < peoples_infected.size(); i++) {
         peoples_infected[i]->move();
-        peoples_infected[i]->infected_steps++;
 
+        // Check perido of illnes
         if (peoples_infected[i]->checkRecovering()) {
             peoples_infected[i]->changePeopleType(RECOVERED);
             peoples_recovered.push_back(peoples_infected[i]);
@@ -171,6 +192,8 @@ void Game::oneStepSimulation() {
         }
     }
 
+    StatRecord stat_record = {peoples_susceptible.size(), peoples_infected.size(), peoples_recovered.size()};
+    statistics.push_back(stat_record );
     game_steps++;
 }
 
@@ -193,6 +216,22 @@ void Game::render() {
     SDL_RenderPresent(renderer);
 }
 
+
+void Game::writeStatisticsToFile(const std::string path) {
+    std::ofstream out(path);
+
+    for(int i = 0; i < game_steps; i += STEPS_IN_DAY) {
+        out << statistics[i].susceptible << " " << statistics[i].infected << " " << statistics[i].recovered << " " << std::endl;
+    }
+
+    if (game_steps % STEPS_IN_DAY != 0) {
+        int end = statistics.size() - 1;
+        out << statistics[end].susceptible << " " << statistics[end].infected << " " << statistics[end].recovered << " " << std::endl;
+    }
+    out.close();
+}
+
+
 void Game::inputProcessing() {
     while(SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
@@ -200,5 +239,3 @@ void Game::inputProcessing() {
         }
     }
 }
-
-

@@ -26,7 +26,6 @@ private:
     Vector2D coords;
     Vector2D direction;
     PeopleType type;
-public:
     int infected_steps = 0;
 public:
     People();

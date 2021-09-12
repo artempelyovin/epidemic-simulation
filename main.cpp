@@ -12,4 +12,6 @@ int main()
         game.inputProcessing();
         //SDL_Delay(10);
     }
+
+    game.writeStatisticsToFile("statistics.txt");
 }

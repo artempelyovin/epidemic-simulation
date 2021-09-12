@@ -42,6 +42,7 @@ int People::getY() const                        { return coords.getY();}
 PeopleType People::getPeopleType() const        { return type;}
 void People::changePeopleType(PeopleType type)  {this->type = type;}
 
+
 bool People::checkRecovering() const {
     if (type != INFECTIOUS)     return false;
 
@@ -49,18 +50,20 @@ bool People::checkRecovering() const {
     else                                                      return false;
 }
 
+
 void People::move() {
     int x = coords.getX();
     int y = coords.getY();
     int dx = direction.getX();
     int dy = direction.getY();
 
-    // 1% a chance to change the direction
-    if (rand() % 100 == 1) {
+    // 'PROBABILITY_OF_CHANGE_DIRECTION' a chance to change the direction
+    if (rand() % 100 <= PROBABILITY_OF_CHANGE_DIRECTION) {
         direction.setX(rand() % 3 - 1);
-        direction.setX(rand() % 3 - 1);
+        direction.setY(rand() % 3 - 1);
     }
 
+    // Check collisions
     if (x + dx <= 0 || x + dx >= SCREEN_WIDTH) {
         direction.setX(direction.getX() * -1);
     }
@@ -70,6 +73,11 @@ void People::move() {
         direction.setY(direction.getY() * -1);
     }
 
+    // Move
     coords.setX(coords.getX() + direction.getX());
     coords.setY(coords.getY() + direction.getY());
+
+    if (type == INFECTIOUS) {
+        infected_steps++;
+    }
 }
