@@ -12,12 +12,12 @@ const int NUMBER_OF_PEOPLE = 100;
 const int PEOPLE_SIZE = 5;
 const int INFECTION_RADIUS = PEOPLE_SIZE * 5 / 2;
 
-const SDL_Color INFECTION_RADIUS_COLOR = {51, 22, 3, 255};
-
 const int STEPS_IN_DAY = 100;
-const int PERIOD_OF_ILLNES = 10;                   // in days
+const int PERIOD_OF_ILLNES = 15;                   // in days
 
-const int PROBABILITY_OF_INFECTION = 2;            // (in %)
+const int PROBABILITY_OF_INFECTION = 3;            // (in %)
 const int PROBABILITY_OF_CHANGE_DIRECTION = 1;     // (in %)
+
+const SDL_Color INFECTION_RADIUS_COLOR = {51, 22, 3, 255};
 
 #endif

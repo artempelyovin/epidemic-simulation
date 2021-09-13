@@ -10,7 +10,7 @@ int main()
         game.oneStepSimulation();
         game.render();
         game.inputProcessing();
-        //SDL_Delay(10);
+        SDL_Delay(10);
     }
 
     game.writeStatisticsToFile("statistics.txt");
